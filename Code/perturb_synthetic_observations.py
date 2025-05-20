@@ -6,7 +6,7 @@ from pathlib import Path
 np.random.seed(2025)
 
 PROJECT_ROOT = Path(__file__).parent.parent
-PATH_TO_SYNTH_TRUTH = Path('/cluster/projects/nn9774k/palm/v24.04/JOBS/Processed_files_flight_21') #PROJECT_ROOT / "Data" / "Processed_LES_data"
+PATH_TO_SYNTH_TRUTH = Path('/cluster/projects/nn9774k/palm/v24.04/JOBS/Processed_files_flight_21')
    
 def SYNTH_TRUTH_FILE_STEM(i):
     SYNTH_TRUTH_FILE_STEM = f"zac_shf_{i}_output"
@@ -20,14 +20,16 @@ OBS_ERROR_STDS: dict = {
     "wind_direction":0.8, 
 }
 
-
+# Converts u and v to wind speed and wind direction.
 def u_and_v_to_wind_speed_and_wind_direction(u, v):
     wind_speed = np.sqrt(u**2 + v**2)  
-    wind_direction = np.arctan2(-u, -v) # Should be wind_direction = np.arctan2(-u, -v) I think, but this seems more correct. 
+    wind_direction = np.arctan2(-u, -v)
     return wind_speed, wind_direction
 
+
 def main():
-    
+
+    # Perturbes LES files by adding noise, for synthetic truth and cross validation. 
     for i in range(1,65):
         # Load data
         st_df = pd.read_csv(
@@ -53,8 +55,6 @@ def main():
             PATH_TO_SYNTH_TRUTH / f"{SYNTH_TRUTH_FILE_STEM(i)}_perturbed.csv",
             index=False,
         )
-
-    
 
 
 if __name__ == "__main__":

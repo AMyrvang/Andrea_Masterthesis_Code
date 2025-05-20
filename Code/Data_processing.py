@@ -1,11 +1,10 @@
+
 # Imports
 import xarray as xr
 import pandas as pd
 import numpy as np
-
 from pathlib import Path
 from typing import List
-
 import os
 import glob
 import warnings
@@ -20,10 +19,17 @@ print(ROOT_DIR)
 
 def process_drone_flight_data(input_file, final_output_file, columns, overall_start_time, overall_end_time, aggregation_interval, drone_time_windows=None):
     """
-    Need to add here pluss comments in the code
-    
+    Process the flight data by gathering the correct columns and flight time. 
+
+    Parameters:
+    - input_file: The flight data file. 
+    - final_output_file: The processed drone data file. 
+    - columns: The columns to be gatherd from the flight data. 
+    - overall_start_time: Start time for all the drones.
+    - overall_end_time: End time for all the drones.
+    - aggregation_interval: Spesifick flighttimes for each of the drones. 
     """
-    
+    # Load data
     input_file = Path(input_file)
     final_output_file = Path(final_output_file)
 
@@ -33,10 +39,12 @@ def process_drone_flight_data(input_file, final_output_file, columns, overall_st
         df.rename(columns={first_col: "time"}, inplace=True)
     df['time'] = pd.to_datetime(df['time'])
     
+    # Sets start and end time.
     overall_start_dt = pd.to_datetime(overall_start_time)
     overall_end_dt = pd.to_datetime(overall_end_time)
     df = df[(df['time'] >= overall_start_dt) & (df['time'] <= overall_end_dt)]
     
+    # Checks over columns
     missing_cols = [col for col in columns if col not in df.columns]
     if missing_cols:
       print("Warning: The following columns are not found in the dataset:", missing_cols)
@@ -44,16 +52,27 @@ def process_drone_flight_data(input_file, final_output_file, columns, overall_st
     df = df[columns]
     df = df.loc[:, ~df.columns.duplicated()]
 
+    # Ensure 'time' is structured correcty.
     df['bin_time'] = (df['time'] + pd.Timedelta(seconds=aggregation_interval)).dt.floor(f'{aggregation_interval}S')
     agg_df = df.groupby('bin_time', as_index=False).mean(numeric_only=True)
     agg_df.rename(columns={'bin_time': 'time'}, inplace=True)
-    # Ensure 'time' is the first column.
+
     cols = agg_df.columns.tolist()
     cols.remove('time')
     agg_df = agg_df[['time'] + cols]
 
   
     def extract_drone_data(drone, utm_x, utm_y, alt, theta, windspeed=None, winddir=None):
+        """
+        Extracting the drone data for only the wanted columns and in the wanted format.
+
+        Parameters:
+         - drone: The spresifick drone (21, 23, 25 or 90)
+         - utm_x, utm_y: The UTM coordintates in x and y direction. 
+         - alt: The hight in z direction, in meter.
+        """
+
+        # Set columns
         cols = ['time', utm_x, utm_y, alt, theta]
         rename_map = {
             utm_x: 'utm_x',
@@ -61,6 +80,7 @@ def process_drone_flight_data(input_file, final_output_file, columns, overall_st
             alt: 'utm_z',
             theta: 'theta_temp'
         }
+        # Windspeed and Windrection for drone 90.
         if drone == "drone90" and windspeed and winddir:
             cols.extend([windspeed, winddir])
             rename_map[windspeed] = 'windspeed'
@@ -71,11 +91,13 @@ def process_drone_flight_data(input_file, final_output_file, columns, overall_st
         df_drone['theta_temp'] = df_drone['theta_temp'] + 273.15
         
         df_drone['drone'] = drone
+
         # For drone90, ensure altitude is positive.
         if drone == "drone90":
             df_drone['utm_z'] = df_drone['utm_z'].abs()
         return df_drone
 
+    # Extract drone data for the spesific drones. 
     df_drone90 = extract_drone_data("drone90", "drone90_utm_x", "drone90_utm_y", "drone90_z",
                                     "drone90_mpcTemp_pot", "drone90_WindEstimate_Magnitude__mDs", "drone90_WindEstimate_Direction__rad")
     df_drone21 = extract_drone_data("drone21", "drone21_utm_x", "drone21_utm_y", "drone21_z", "drone21_mpcTemp_pot")
@@ -85,7 +107,7 @@ def process_drone_flight_data(input_file, final_output_file, columns, overall_st
     long_df = pd.concat([df_drone90, df_drone21, df_drone23, df_drone25], ignore_index=True)
     long_df['time'] = pd.to_datetime(long_df['time'])
 
-
+    # Dropp all rows without of the time_windows set. 
     if drone_time_windows is not None:
         mask = pd.Series(True, index=long_df.index)
         for drone, (start_str, end_str) in drone_time_windows.items():
@@ -95,6 +117,7 @@ def process_drone_flight_data(input_file, final_output_file, columns, overall_st
             mask[drone_mask] = long_df.loc[drone_mask, 'time'].between(start_dt, end_dt)
         long_df = long_df[mask]
 
+    # Sort the data into a set structure with drone 90 first then 21, 23 and lastly 25. 
     drone_order = {"drone90": 0, "drone21": 1, "drone23": 2, "drone25": 3}
     long_df['drone_order'] = long_df['drone'].map(drone_order)
     long_df.sort_values(by=['drone_order', 'time'], inplace=True)
@@ -107,6 +130,7 @@ def process_drone_flight_data(input_file, final_output_file, columns, overall_st
 
     long_df['seconds_after_takeoff'] = (long_df['time'] - overall_start_dt).dt.total_seconds().astype(int)
 
+    # Save to csv file.
     long_df.to_csv(final_output_file, index=False)
     print(f"Final long-format data saved to {final_output_file}")
     return long_df
@@ -115,7 +139,8 @@ def process_drone_flight_data(input_file, final_output_file, columns, overall_st
 
 def utm_coordinates_to_gridpoints(input_file, output_file, utm_x, utm_y, utm_z, center_utm_x=513200, center_utm_y=8265250, center_grid_x=47, center_grid_y=119, cell_size=16):
     """
-    Matches the UTM coordinates to the corresponding gridcell in the LES griddsystem
+    Matches the UTM coordinates to the corresponding gridcell in the LES griddsystem.
+
     Parameters:
     - input_file: The dataframe with the UTM corner coordinates.
     - output_file: The output path and file for the gridded data.  
