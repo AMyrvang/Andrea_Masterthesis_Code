@@ -2,7 +2,6 @@
 # Imports
 import pandas as pd
 import numpy as np
-import re
 import itertools
 #import glob
 from pathlib import Path

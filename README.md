@@ -1,18 +1,27 @@
 # Andrea_Masterthesis_Code
-This is all the code and most of the datasets used for my masterproject titeld "". Which implements the "Calibrate, Emulate, Sample" to infer LES data. 
+This is all the code and most of the datasets used for my masterproject titeld " Emulator-based inference of surface heat fluxes in large eddy simulations using multi-drone observations". Which implements the "Calibrate, Emulate, Sample" to infer LES data. 
 
 Please note that not all of the data is saved at this repository because of space and file size. Most of the processed files can be located in the `Data` folder. You might also need to modify the file path in the script to correctly access those files. 
 
 
 ### Requirements
-To run the Python programs, the following Python packages must be installed:
-- Numpy
-- Pandas
+To run the Python programs, the following Python packages must be installed (all installable via pip or conda):
 
-- Scikit-learn
-- Matplotlib
+- Numpy >=1.18
+- Pandas >=1.0
+- Xarray >=0.15
+- Matplotlib >=3.1
 - Seaborn
-- 
+- Scipy >=1.4
+- Scikit-Learn >=0.22
+- Os
+- Warnings
+- Argparse
+- Intertools
+- Tqdm >=4.40
+- Pathlib.Path
+- Typing.List
+
 
 ### Structure
 - `Code`Containes all the code files
