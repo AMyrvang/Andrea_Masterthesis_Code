@@ -5,7 +5,7 @@ The original and unprocessed LES files are not saved in this repository because 
 ALl the other files can be located in the `Data` folder. You might also need to modify the file paths in the script to correctly access those files. 
 
 
-![Workflow figure](https://github.com/AMyrvang/Andrea_Masterthesis_Code/Tables_and_Figures/Workflow.png?raw=true)
+![Workflow figure](https://github.com/AMyrvang/Andrea_Masterthesis_Code/blob/main/Tables_and_Figures/Workflow.png?raw=true)
 
 
 ### Requirements
