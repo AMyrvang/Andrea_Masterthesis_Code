@@ -1,12 +1,15 @@
 # Andrea_Masterthesis_Code
 This is all the code and most of the datasets used for my masterproject titeld " Emulator-based inference of surface heat fluxes in large eddy simulations using multi-drone observations". Which implements the "Calibrate, Emulate, Sample" to infer LES data. 
 
-The original and unprocessed LES files are not saved in this repository because of space and file size.
-ALl the other files can be located in the `Data` folder. You might also need to modify the file paths in the script to correctly access those files. 
-
-
 ![Workflow figure](https://github.com/AMyrvang/Andrea_Masterthesis_Code/blob/main/Tables_and_Figures/Workflow.png?raw=true)
 
+
+
+
+
+
+The original and unprocessed LES files are not saved in this repository because of space and file size.
+ALl the other files can be located in the `Data` folder. You might also need to modify the file paths in the script to correctly access those files. 
 
 ### Requirements
 To run the Python programs, the following Python packages must be installed (all installable via pip or conda):
