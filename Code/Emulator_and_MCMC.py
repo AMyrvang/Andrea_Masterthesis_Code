@@ -101,9 +101,12 @@ class EmulatorSampler:
             merge = self.truth_df.merge(columns_needed, on=['drone','seconds_after_takeoff']).dropna()
             if merge.empty: continue
             nlls.append(compute_nll(merge['theta_mod'], merge['theta_obs'], self.sigma))
+
+            #---------Need to look into this--------------
             wind_radians = merge['wind_dir']
             featurs.append([merge['wind_speed'].mean(), np.sin(wind_radians).mean(), np.cos(wind_radians).mean()])
-        
+            #---------------------------------------------
+
         # Make intput matrix
         X_prior = self.priors_df.loc[index].values
         X_feature = np.vstack(featurs)
@@ -128,12 +131,14 @@ class EmulatorSampler:
         random_state = Seed for reproducibility
         """
         # Set kernel
+        #--------------Look into this--------------
         kernel = (
             ConstantKernel(1.0,(1e-2,1e2)) * (
                 RBF(20,(1e1,1e2)) + Matern(length_scale=1.0, nu=1.5, length_scale_bounds=(1e-1,1e1)) +
                 RationalQuadratic(length_scale=15, alpha=0.1, length_scale_bounds=(1,1e2), alpha_bounds='fixed')
             ) + WhiteKernel(noise_level=1.0, noise_level_bounds=(1e-6,1e2))
         )
+        #------------------------------------------
         # Run the GPR, scale inputs and fit it.
         gpr = GaussianProcessRegressor(
             kernel=kernel, alpha=1e-6, normalize_y=False,
@@ -250,8 +255,6 @@ class EmulatorSampler:
 
 
 
-
-
 def main():
 
     # Run it for the synthetic case first.
@@ -318,10 +321,6 @@ def main():
     # Save the resutls
     samples.to_csv('../Data/Posteriors/MCMC_Chains_Synth.csv', index=False)
     print(samples.describe())
-
-
-
-
 
 
     #Flight 21 case:
