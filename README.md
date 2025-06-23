@@ -4,7 +4,8 @@ This is all the code and most of the datasets used for my masterproject titeld "
 The original and unprocessed LES files are not saved in this repository because of space and file size.
 ALl the other files can be located in the `Data` folder. You might also need to modify the file paths in the script to correctly access those files. 
 
-![alt text](https://file%2B.vscode-resource.vscode-cdn.net/Users/andreamyrvang/GIT_repositoryies/Andrea_Masterthesis_Code/Tables_and_Figures/Workflow.png?version%3D1750665464537)
+
+![Workflow figure](https://github.com/AMyrvang/Andrea_Masterthesis_Code/Tables_and_Figures/Workflow.png?raw=true)
 
 
 ### Requirements
@@ -57,3 +58,28 @@ python Code/Emulator_and_MCMC.py
 - Some of the filepaths might need to be updated to get all the code parts to run. 
 
 ### To Run code for a new flight
+
+First move the repository to Betzy or wherever you have the LES files. 
+
+First, Process the LES files by changing the `main.py`. First fit the new flight dataset, by changing the start and end time for each of the drones, and the file paths for the LES. Then run the code:
+```bash
+python Code/main.py
+```
+
+Secoundly, change the file paths in the `Data_assimilation.py` and run it:
+
+```bash
+python Code/Data_assimilation.py
+```
+
+Next, Process the new LES files by running the `main.py` file again. Then use the new processed file in the `Emulator_and_MCMC.py` file, by chaning the file paths, then running it:
+
+```bash
+python Code/Emulator_and_MCMC.py
+```
+
+#### For a sunthetic case:
+For a synthetic case you need to proess the truth file by running the `main.py` file. Then the file needs to be perturbed by adding noise, so change the file path in `perturb_synthetic_observations.py` and run it with the wanted noise.
+```bash
+python Code/perturb_synthetic_observations.py
+```
