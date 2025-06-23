@@ -4,7 +4,7 @@ This is all the code and most of the datasets used for my masterproject titeld "
 The original and unprocessed LES files are not saved in this repository because of space and file size.
 ALl the other files can be located in the `Data` folder. You might also need to modify the file paths in the script to correctly access those files. 
 
-![Workflow figure](https://file%2B.vscode-resource.vscode-cdn.net/Users/andreamyrvang/Documents/Masteroppgave_Emulator/Pressentation_figures/JPEG-bilde-4D50-8176-66-0.jpeg?version%3D1750665136203)
+![alt text](https://file%2B.vscode-resource.vscode-cdn.net/Users/andreamyrvang/GIT_repositoryies/Andrea_Masterthesis_Code/Tables_and_Figures/Workflow.png?version%3D1750665464537)
 
 
 ### Requirements
@@ -57,4 +57,3 @@ python Code/Emulator_and_MCMC.py
 - Some of the filepaths might need to be updated to get all the code parts to run. 
 
 ### To Run code for a new flight
-Import the github repository into betzy to connect the LES files. 
